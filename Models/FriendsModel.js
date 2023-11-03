@@ -3,12 +3,14 @@ const Schema = mongoose.Schema;
 
 const FriendsSchema = new mongoose.Schema(
   {
-    friends: {
-      type: Array,
-    },
-    user: {
+    friends: [{
       type: Schema.Types.ObjectId,
-      required: true,
+      ref: 'user' // Referencing the 'user' model
+    }],
+    user: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'user' // Referencing the 'user' model
     },
   },
   {

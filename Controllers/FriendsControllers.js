@@ -50,7 +50,10 @@ const GetFriendsList= async (req, res)=>{
         }
 
         const user_id = decodSecretToken(token);
-        let friends = await Friend.findOne({ user: user_id });
+        let friends = await Friend.findOne({ user: user_id }).populate({
+            path: 'friends',
+            select: '-password' // Exclude the 'password' field from the response
+         });
         return res.status(200).json(friends)
 
     }catch(error){
