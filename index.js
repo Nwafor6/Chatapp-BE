@@ -8,6 +8,7 @@ const authRoute = require("./Routes/AuthRoute");
 const todoRoute = require("./Routes/TodoRoutes");
 const friendRoute = require("./Routes/FriendRoute");
 const chatRoute = require("./Routes/ChatRoute");
+const messageRoute = require("./Routes/MessageRoute");
 const path = require('path');
 
 mongoose
@@ -37,6 +38,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use("/",authRoute)
 app.use("/",friendRoute)
 app.use("/",chatRoute)
+app.use("/",messageRoute)
 app.use("/",todoRoute)
 // Error handling middleware
 app.use((err, req, res, next) => {
