@@ -28,13 +28,38 @@ const addChat = async (req, res) => {
             members: members,
         });
 
-        return res.status(201).json({ detail: "Chat added successfully." });
+            
     } catch (error) {
         console.error("Error:", error);
         return res.status(500).json({ detail: "Internal Server Error", success: false });
     }
 };
 
+const GetChat= async (req, res) =>{
+    try{
+        const  friendID=req.query.friendID;
+        const token = req.header('Authorization');
+        if (!token) {
+            return res.status(401).json({ detail: "Token not present" });
+        }
+
+        const user_id = decodSecretToken(token);
+        if (friendID){
+            const members = [friendID, user_id];
+            const existingChat = await Chat.findOne({ members: members });
+            return res.status(200).json(existingChat);
+        }
+
+        const existingChat = await Chat.find({ members: { $in: [user_id] } });
+        return res.status(200).json(existingChat);
+        
+
+    }catch(error){
+        return res.status(500).json(error)
+    }
+}
+
 module.exports = {
-    addChat
+    addChat,
+    GetChat
 };
