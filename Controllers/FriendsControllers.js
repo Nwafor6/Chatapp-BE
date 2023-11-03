@@ -42,6 +42,22 @@ const addFriend = async (req, res) => {
     }
 };
 
+const GetFriendsList= async (req, res)=>{
+    try{
+        const token = req.header('Authorization');
+        if (!token) {
+            return res.status(401).json({ detail: "Token not present" });
+        }
+
+        const user_id = decodSecretToken(token);
+        let friends = await Friend.findOne({ user: user_id });
+        return res.status(200).json(friends)
+
+    }catch(error){
+        return res.status(500).json(error)
+    }
+}
 module.exports = {
-    addFriend
+    addFriend,
+    GetFriendsList
 };
