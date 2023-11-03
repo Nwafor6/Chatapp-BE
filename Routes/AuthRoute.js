@@ -1,4 +1,4 @@
-const {signUp,Login, SendMail, UpdateProfile, UpdateProfileImg}=require("../Controllers/AuthController")
+const {signUp,Login, SendMail, UpdateProfile, UpdateProfileImg, getAllusers}=require("../Controllers/AuthController")
 const router = require("express").Router();
 const multer = require('multer');
 const path = require('path');
@@ -29,6 +29,7 @@ const upload = multer({
 });
 
 router.post("/signup", signUp)
+router.get("/all-users", getAllusers)
 router.post('/login', Login)
 router.put("/update-profile/:id",UpdateProfile)
 router.put("/uploads/update-pic/:id",upload.single('file'), UpdateProfileImg)
