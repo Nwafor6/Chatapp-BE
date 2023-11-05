@@ -27,6 +27,7 @@ const addChat = async (req, res) => {
         await Chat.create({
             members: members,
         });
+        return res.status(201).json({ detail: "Chat added" });
 
             
     } catch (error) {

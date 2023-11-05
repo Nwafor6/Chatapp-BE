@@ -3,9 +3,10 @@ const Schema = mongoose.Schema;
 
 const ChatSchema = new Schema(
   {
-    members: {
-      type: Array
-    }
+    members:  [{
+      type: Schema.Types.ObjectId,
+      ref: 'user' // Referencing the 'user' model
+    }],
   },
   {
     timestamps: true // Enable timestamps (createdAt and updatedAt fields)

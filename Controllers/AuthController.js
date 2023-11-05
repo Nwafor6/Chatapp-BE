@@ -1,5 +1,6 @@
 const User= require ("../Models/UserModel")
 const {createSecretToken, decodSecretToken}=require("../util/SecretToken")
+const Friend= require("../Models/FriendsModel")
 const bcrypt= require("bcrypt");
 const nodemailer= require("nodemailer")
 const cloudinary = require("../util/cloudinary");
@@ -131,8 +132,25 @@ const UpdateProfileImg = async (req, res)=>{
 
 const getAllusers = async (req, res)=>{
     try{
-        const users= await User.find({})
-        return res.status(200).json(users);
+        const token = req.header('Authorization');
+        if (!token) {
+            return res.status(401).json({ detail: "Token not present" });
+        }
+
+        const user_id = decodSecretToken(token);
+        let friends = await Friend.findOne({ user: user_id }).populate({
+            path: 'friends',
+            select: '-password' // Exclude the 'password' field from the response
+        });
+
+        const friendIds = friends.friends.map(friend => friend._id);
+        
+        // Find users whose IDs are not in the friendIds array
+        const notFriends = await User.find({
+            _id: { $nin: friendIds }
+        });
+
+        return res.status(200).json(notFriends);
     }catch(err){
         return res.status(500).json(err)
     }

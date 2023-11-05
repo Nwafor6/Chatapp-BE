@@ -5,9 +5,9 @@ const { decodSecretToken } = require("../util/SecretToken");
 
 const addMessage = async (req, res) => {
     try {
-        const { chatId, text} = req.body;
-        if (!chatId) {
-            return res.status(400).json({ detail: " chatId fields is required" });
+        const { friendID, text} = req.body;
+        if (!friendID) {
+            return res.status(400).json({ detail: " friendID fields is required" });
         }
 
         const token = req.header('Authorization');
@@ -16,15 +16,16 @@ const addMessage = async (req, res) => {
         }
 
         const user_id = decodSecretToken(token);
+        members=[user_id, friendID]
         // Check if the chat ID exist
-        let chat = await Chat.findOne({ _id: chatId, members: { $in: [user_id] } });
+        let chat = await Chat.findOne({members: { $in: members } });
 
         if (!chat) {
             return res.status(400).json({ detail: "Chat does not exists in your chat list" });
         } 
         // Create a new friend record
         const message =await Message.create({
-            chatId: chatId,
+            chatId: chat._id,
             senderId: user_id,
             text:text
         });
@@ -39,8 +40,8 @@ const addMessage = async (req, res) => {
 
 const GetMessages= async (req, res)=>{
     try{
-        const  chatId=req.query.chatId;
-        if (!chatId) return res.status(400).json({ detail: "chatId and userID are required" });
+        const  friendID=req.query.friendID;
+        if (!friendID) return res.status(400).json({ detail: "friendID  are required" });
 
         const token = req.header('Authorization');
         if (!token) {
@@ -48,11 +49,12 @@ const GetMessages= async (req, res)=>{
         }
 
         const user_id = decodSecretToken(token);
-        let chat = await Chat.findOne({ _id: chatId, members: { $in: [user_id] } });
+        const members=[user_id, friendID]
+        let chat = await Chat.findOne({ members: { $all: members } });
         if (!chat) {
             return res.status(400).json({ detail: "Chat does not exists in your chat list" });
         } 
-        let messages = await Message.find({ senderId: user_id, chatId: chatId});
+        let messages = await Message.find({  chatId: chat._id});
         return res.status(200).json(messages)
 
     }catch(error){
