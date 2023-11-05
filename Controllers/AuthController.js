@@ -143,12 +143,20 @@ const getAllusers = async (req, res)=>{
             select: '-password' // Exclude the 'password' field from the response
         });
 
-        const friendIds = friends.friends.map(friend => friend._id);
-        
-        // Find users whose IDs are not in the friendIds array
-        const notFriends = await User.find({
-            _id: { $nin: friendIds }
-        });
+        const friendIds = friends ? friends.friends.map(friend => friend._id) : [];
+        const usersToExclude = [...friendIds, user_id]; // Exclude user's own ID as well
+
+        let notFriends;
+
+        if (friendIds.length === 0) {
+            notFriends = await User.find({
+                _id: { $nin: usersToExclude }
+            });
+        } else {
+            notFriends = await User.find({
+                _id: { $nin: usersToExclude }
+            });
+        }
 
         return res.status(200).json(notFriends);
     }catch(err){
