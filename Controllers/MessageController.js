@@ -18,10 +18,11 @@ const addMessage = async (req, res) => {
         const user_id = decodSecretToken(token);
         members=[user_id, friendID]
         // Check if the chat ID exist
-        let chat = await Chat.findOne({members: { $in: members } });
+        let chat = await Chat.findOne({members: { $all: members } });
 
         if (!chat) {
-            return res.status(400).json({ detail: "Chat does not exists in your chat list" });
+            chat = await Chat.create({members: members})
+            // return res.status(400).json({ detail: "Chat does not exists in your chat list" });
         } 
         // Create a new friend record
         const message =await Message.create({
