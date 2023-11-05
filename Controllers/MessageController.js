@@ -52,7 +52,7 @@ const GetMessages= async (req, res)=>{
         const members=[user_id, friendID]
         let chat = await Chat.findOne({ members: { $all: members } });
         if (!chat) {
-            return res.status(400).json({ detail: "Chat does not exists in your chat list" });
+            return res.status(200);
         } 
         let messages = await Message.find({  chatId: chat._id});
         return res.status(200).json(messages)
