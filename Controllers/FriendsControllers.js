@@ -15,17 +15,19 @@ const addFriend = async (req, res) => {
 
         const user_id = decodSecretToken(token);
         const friends = [friendID];
+        // const myfriendsFriends = [user_id]; //Add the user's id to the friend's friendlist as well
 
         let friend = await Friend.findOne({ user: user_id });
 
         const existingFriend = await Friend.findOne({ user: user_id, friends: friendID });
 
         if (existingFriend) {
-            return res.status(400).json({ detail: "FriendID already exists in your friend list" });
+            return res.status(400).json({ detail: "User already exists in your friend list" });
         }
         if (friend) {
             // Update the existing friend recordt
             await Friend.updateOne({ user: user_id }, { $push: { friends: friendID } });
+            await Friend.updateOne({ user: friendID }, { $push: { friends: user_id } });
             return res.status(201).json({ detail: "Friend list updated successfully.",});
         } else {
             // Create a new friend record
